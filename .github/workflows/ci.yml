@@ -1,0 +1,12 @@
+name: svc-orders-ci
+on:
+  pull_request:
+    paths: [ "src/**", "Dockerfile", "package.json" ]
+  push:
+    branches: [ "main" ]
+jobs:
+  build-test:
+    uses: YOUR_GH_USERNAME/platform/.github/workflows/reusable-ci.yml@main
+    with:
+      service_name: svc-orders
+      path_filter: "."

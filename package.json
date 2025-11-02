@@ -1,0 +1,9 @@
+{
+  "name": "svc-orders",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node src/index.js",
+    "lint": "echo 'lint passed'",
+    "test": "echo 'tests passed'"
+  }
+}

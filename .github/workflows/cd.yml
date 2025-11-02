@@ -1,0 +1,32 @@
+name: promote-to-dev
+on:
+  push:
+    branches: [ "main" ]
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Compute tag
+        id: meta
+        run: echo "tag=sha-${GITHUB_SHA}" >> $GITHUB_OUTPUT
+
+      - name: Checkout env repo
+        uses: actions/checkout@v4
+        with:
+          repository: YOUR_GH_USERNAME/env
+          token: ${{ secrets.ENV_REPO_PAT }}
+
+      - name: Update image tag
+        run: |
+          yq -i '.image.tag = "${{ steps.meta.outputs.tag }}"' apps/svc-orders/dev/values.yaml
+          git config user.email "ci@users.noreply.github.com"
+          git config user.name "ci-bot"
+          git checkout -b bump-orders-${{ steps.meta.outputs.tag }}
+          git commit -am "orders → dev ${{ steps.meta.outputs.tag }}"
+          git push origin HEAD
+
+      - name: Open PR
+        run: |
+          gh pr create --repo YOUR_GH_USERNAME/env \
+            --title "orders → dev ${{ steps.meta.outputs.tag }}" \
+            --body "Auto bump"
